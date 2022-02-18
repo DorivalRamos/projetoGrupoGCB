@@ -4,15 +4,16 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User)
-   private userRepository : Repository<User>,
+  constructor(@InjectRepository(UserRepository)
+   private userRepository :UserRepository
   ) {} 
   async createUser(data: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(data);
-    const userSaved = await this.userRepository.save(user);
+    const userSaved = await this.userRepository.createUser(user);
 
     if(!userSaved){
       throw new InternalServerErrorException('Problem to create a user, Try again')
@@ -43,13 +44,10 @@ export class UsersService {
     return userUpdated ;
   }
 
-  async deleteUser(id: string): Promise<boolean> {
+  async deleteUser(id: string): Promise<User> {
     const user = await this.findUserById(id);
-    const deleted = await this.userRepository.delete(user);
+    const deleted = await this.userRepository.softRemove(user);
     
-    if(deleted){
-      return true
-    }
-    return false ;
-  }
-}
+    
+    return deleted;
+}}
