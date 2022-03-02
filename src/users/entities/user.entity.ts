@@ -1,7 +1,9 @@
-import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, IsNull, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, IsNull, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
+import { Specialties } from "../../specialties/entities/specialties.entity";
 
 
 @Entity()
+@Unique(['name','crm'])
 export class User extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -27,4 +29,10 @@ export class User extends BaseEntity {
     @DeleteDateColumn()
     deleted_at : Date;
 
+    
+    @OneToMany(() => Specialties , specialties => specialties.user , {
+        cascade: true,        
+    })
+    @JoinTable()
+    specialties: Specialties[];
 }
