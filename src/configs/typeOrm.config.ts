@@ -15,7 +15,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
     entities: [path.resolve(__dirname + '/../**/*.entity.{js,ts}')],
     migrations: [path.resolve(__dirname + '/../**/*.entity.{js,ts}')],
     cli: {
-        "migrationsDir": "src/configs/migrations/",
+        "migrationsDir": "src/**/**/",
         "entitiesDir": "src/**/**/",
     },
      
