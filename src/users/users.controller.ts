@@ -8,8 +8,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    return  await this.usersService.createUser(createUserDto);
+  create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
+    return  this.usersService.createUser(createUserDto);
   }
 
   @Get()
@@ -17,9 +17,29 @@ export class UsersController {
     return this.usersService.findAllUsers();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get('userById/:id')
+  findOneUserId(@Param('id') id: string) {
     return this.usersService.findUserById(id);
+  }
+
+  @Get('userByName/:name')
+  findOneUserName(@Param('name') name: string) {
+    return this.usersService.findOneByName(name);
+  }
+
+  @Get('userByEmail/:email')
+  findOneUserEmail(@Param('email') email: string) {
+    return this.usersService.findOneByEmail(email);
+  }
+
+  /* @Get('userByCep/:id')
+  findOneUserCep(@Param('cep') cep: string) {
+    return this.usersService.findOneByCep(cep);
+  } */
+
+  @Get('userByCrm/:crm')
+  findOneUserCrm(@Param('crm') crm: string) {
+    return this.usersService.findOneByCrm(crm);
   }
 
   @Patch(':id')
@@ -28,7 +48,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.usersService.deleteUser(id);
+  remove(@Param('id') id: string) {
+    return  this.usersService.deleteUser(id);
   }
 }
