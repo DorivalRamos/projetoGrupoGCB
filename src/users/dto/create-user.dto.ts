@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { ArrayMinSize, IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import { Specialties } from "../../specialties/entities/specialties.entity";
 
 
 export class CreateUserDto {
@@ -25,4 +26,10 @@ export class CreateUserDto {
   @MaxLength(8, { message: 'O crm deve ter menos de 8 caracteres' })
   @MinLength(8, { message: 'O crm deve ter no minimo 8 caracteres' })
   crm : string
+
+  
+  @ArrayMinSize(1 ,{message: 'Informe no minimo uma especialidade valida'})
+  @IsOptional()
+  specialties: Specialties[]
+  
 }
