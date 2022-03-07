@@ -13,8 +13,8 @@ export class UsersService {
 
 
   async createUser(data: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(data);
-    const userSaved = await this.userRepository.createUser(user);
+    
+    const userSaved = await this.userRepository.createUser(data);
 
     if(!userSaved){
       throw new InternalServerErrorException('Problem to create a user, Try again')
@@ -24,12 +24,16 @@ export class UsersService {
   }
 
   async findAllUsers(): Promise<User[]> {
-    const users = await this.userRepository.find({relations: ['specialties']});
+    const users = await this.userRepository.find({
+      select: ['id','name', 'email', 'crm', 'cep', 'specialties'],
+      order: {name: 'ASC'}});
     return users;
   }
 
   async findUserById(id: string): Promise<User> {
-    const user =  await this.userRepository.findOne(id);
+    const user =  await this.userRepository.findOne(id,{
+      select: ['id','name', 'email', 'crm', 'cep']
+    });
 
     if (!user) {
           throw new NotFoundException('User not found');
@@ -38,7 +42,7 @@ export class UsersService {
   }
 
   async findOneByName(name: string): Promise<User> {
-    const user =  await this.userRepository.repositoryfindUserByName(name);
+    const user =  await this.userRepository.repositoryFindUserByName(name);
 
     if (!user) {
           throw new NotFoundException('User not found');
@@ -51,7 +55,7 @@ export class UsersService {
     if(!userEmail.includes('@') && userEmail.length < 100){
       throw new NotFoundException('Enter a valid Email');
     }
-    const user =  await this.userRepository.repositoryfindUserByEmail(email);
+    const user =  await this.userRepository.repositoryFindUserByEmail(email);
     
 
     if (!user) {
@@ -66,7 +70,7 @@ export class UsersService {
       throw new NotFoundException('Enter a Valid CRM');
     }
 
-    const user =  await this.userRepository.repositoryfindUserBycrm(crm);
+    const user =  await this.userRepository.repositoryFindUserBycrm(crm);
 
     if (!user) {
           throw new NotFoundException('User not found');
@@ -74,19 +78,44 @@ export class UsersService {
     return  user ;
   }
 
- 
-
-
-  async updateUser(id: string, data: UpdateUserDto): Promise <User> {
-    const user = await this.findUserById(id);
-    await this.userRepository.update(user, {...data});
-    const userUpdated= this.userRepository.create({ ...user,...data});
+  async findOneByCep(cep: string): Promise<User> {
+    const userCep = cep
+    if(userCep.length != 9 ){
+      throw new NotFoundException('Enter a Valid Cep');
+    }
     
-    return userUpdated ;
+    const user =  await this.userRepository.repositoryFindUserByCep(cep);
+
+    if (!user) {
+          throw new NotFoundException('User not found');
+    }
+    return  user ;
+  }
+
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise <User> {
+    const user = await this.findUserById(id);
+    const { name, email, cep, crm } = updateUserDto;
+    user.name = name ? name : user.name;
+    user.email = email ? email : user.email;
+    user.cep = cep ? cep : user.cep;
+
+    user.crm = crm ? crm : user.crm;
+   
+    console.log(user);
+    try { 
+      await user.save()
+
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Erro ao salvar os dados no banco de dados',
+      );
+    }
+  
   }
 
   async deleteUser(id: string): Promise<User> {
-    const user = await this.findUserById(id);
+    const user = await this.userRepository.findOne(id);
     const deleted = await this.userRepository.softRemove(user);
     
     if (!deleted) {
