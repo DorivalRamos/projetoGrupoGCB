@@ -5,7 +5,7 @@ export default class TestUtil {
     static giveMeAValidUser(): User{
         const user = new User();
         user.name = 'validName';
-        user.email = '  valid@email.com';
+        user.email = 'valid@email.com';
         user.cep = 'validCep';
         user.crm = '123456789';
         user.id = uuidv4();
