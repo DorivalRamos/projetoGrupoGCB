@@ -3,7 +3,7 @@ import { Specialties } from "../../specialties/entities/specialties.entity";
 
 
 @Entity()
-@Unique(['name','crm'])
+@Unique(['email','crm'])
 export class User extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -31,8 +31,8 @@ export class User extends BaseEntity {
 
     
     @OneToMany(() => Specialties , specialties => specialties.user , {
-        cascade: true,        
-    })
-    @JoinTable()
-    specialties: Specialties[];
+        onDelete : 'CASCADE',
+        onUpdate: 'CASCADE',
+        })
+    specialties: Specialties;
 }
