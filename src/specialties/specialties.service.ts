@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateSpecialtyDto } from './dto/create-specialty.dto';
 import { UpdateSpecialtyDto } from './dto/update-specialty.dto';
@@ -11,31 +11,58 @@ export class SpecialtiesService {
   private specialtiesRepository: SpecialtiesRepository ){}
   
   async create(data: CreateSpecialtyDto) {
-    const specialties = this.specialtiesRepository.create(data);
-    const userSpecialties = await this.specialtiesRepository.createSpecialties(specialties);
+    const userSpecialties = await this.specialtiesRepository.createSpecialties(data);
 
     if(!userSpecialties){
-      throw new InternalServerErrorException('Problem to create a user, Try again')
+      throw new InternalServerErrorException('Problem to create a specialties,Specialty already created, Try again')
     }
     return userSpecialties;
   }
 
   async findAll(): Promise<Specialties[]> {
-    const specialties = await this.specialtiesRepository.find({relations: ['user']});
+    const specialties = await this.specialtiesRepository.find({select: ['name','id']});
 
     return specialties;
     
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} specialty`;
+  async findSpecialtiesById(id: string ) {
+    
+    const specialties = await this.specialtiesRepository.findOne( {
+      where : {id},
+      select : ['id','name'],
+    } );
+    console.log(specialties)
+
+    if(!specialties){
+      throw new NotFoundException('Specialties not found'); 
+    }
+    return specialties;
   }
 
-  update(id: number, updateSpecialtyDto: UpdateSpecialtyDto) {
-    return `This action updates a #${id} specialty`;
+
+  async findSpecialtiesByName(name: string ) {
+    
+    const specialties = await this.specialtiesRepository.findOne({name}, {
+      select: ['name']
+    } );
+    console.log(specialties)
+
+    if(!specialties){
+      throw new NotFoundException('Specialties not found'); 
+    }
+    return specialties;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} specialty`;
+  async update(id: string, updateSpecialtyDto: UpdateSpecialtyDto) {
+    return await this.specialtiesRepository.updateSpecialty(updateSpecialtyDto, id);
+  }
+
+  async remove(id: string) {
+    const data = await this.specialtiesRepository.findOne(id)
+    if(!data){
+      throw new NotFoundException('Specialties not found'); 
+    }
+    return await this.specialtiesRepository.softRemove(data);
   }
 }
