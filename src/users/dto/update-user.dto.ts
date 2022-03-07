@@ -1,12 +1,13 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsOptional } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { Specialties } from 'src/specialties/entities/specialties.entity';
 import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto  {
-    @IsOptional()
+    @IsOptional()   
     name: string;
 
-    @IsOptional()
+    @IsOptional()  
     email: string;
 
     @IsOptional()
@@ -16,11 +17,7 @@ export class UpdateUserDto  {
     crm : string
 
     @IsOptional()
-    create_at : Date;
+    specialties: Specialties
 
-    @IsOptional()
-    update_at : Date;
     
-    @IsOptional()
-    deleted_at : Date;
 }
