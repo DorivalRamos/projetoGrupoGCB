@@ -7,12 +7,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
+  @Post('createUser')
   create(@Body(ValidationPipe) createUserDto: CreateUserDto) {
     return  this.usersService.createUser(createUserDto);
   }
 
-  @Get()
+  @Get('getAll')
   findAll() {
     return this.usersService.findAllUsers();
   }
@@ -32,22 +32,22 @@ export class UsersController {
     return this.usersService.findOneByEmail(email);
   }
 
-  /* @Get('userByCep/:id')
+  @Get('userByCep/:cep')
   findOneUserCep(@Param('cep') cep: string) {
     return this.usersService.findOneByCep(cep);
-  } */
+  }
 
   @Get('userByCrm/:crm')
   findOneUserCrm(@Param('crm') crm: string) {
     return this.usersService.findOneByCrm(crm);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @Patch('updateUser/:id')
+  updateUser(@Param('id') id: string, @Body(ValidationPipe) updateUserDto: UpdateUserDto) {
     return this.usersService.updateUser(id, updateUserDto);
   }
 
-  @Delete(':id')
+  @Delete('deleteUser/:id')
   remove(@Param('id') id: string) {
     return  this.usersService.deleteUser(id);
   }
