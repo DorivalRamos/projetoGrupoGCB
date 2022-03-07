@@ -28,47 +28,39 @@ export class UserRepository extends Repository<User>{
             throw new ConflictException('Endereço de e-mail já está em uso!');
           } else {
             throw new InternalServerErrorException(
-              'Erro ao salvar o usuário no banco de dados',
+              'Error saving Email in database,or CRM already registered',
             );
           }
         }
       };
 
-      async findAll(): Promise<any> {
-        const query = this.createQueryBuilder(
-          'user');
-        query.innerJoinAndSelect('user.specialties', 'specialties')
-        query.select(['user.name',"user.id",
-        "user.email",'user.cep', 'user.crm', 'specialties']);
-  
-        return await query.getMany()
-      }
 
-    async softDelete(id: string): Promise<any>{
-      const query = this.createQueryBuilder('user');
-      query.where('user.id = :id', {id})
-      
-      return await query.softDelete()
-}
-  async repositoryfindUserByName(name: string): Promise<any> {
+  async repositoryFindUserByName(name: string): Promise<any> {
     const query = this.createQueryBuilder('user');
     query.where('user.name = :name', { name });
     query.select(['user.name','user.email', 'user.cep', 'user.crm']);  
-    return await query.getOne();
+    return await query.getMany();
   }
 
-  async repositoryfindUserByEmail(email: string): Promise<any> {
+  async repositoryFindUserByEmail(email: string): Promise<any> {
     const query = this.createQueryBuilder('user');
     query.where('user.email = :email', { email });
     query.select(['user.name','user.email', 'user.cep', 'user.crm']);
     return await query.getOne();
   }
 
-  async repositoryfindUserBycrm(crm: string): Promise<any> {
+  async repositoryFindUserBycrm(crm: string): Promise<any> {
     const query = this.createQueryBuilder('user');
     query.where('user.crm = :crm', { crm });
     query.select(['user.name','user.email', 'user.cep', 'user.crm']);
     return await query.getOne();
+  }
+
+  async repositoryFindUserByCep(cep: string): Promise<any> {
+    const query = this.createQueryBuilder('user');
+    query.where('user.cep = :cep', { cep });
+    query.select(['user.name','user.email', 'user.cep', 'user.crm']);
+    return await query.getMany();
   }
 
 }
