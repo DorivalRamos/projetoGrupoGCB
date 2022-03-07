@@ -20,10 +20,11 @@ export class Specialties extends BaseEntity {
     @DeleteDateColumn()
     deleted_at : Date;
 
-    
-    @ManyToOne(() => User, (user) => user.specialties, {
+    @JoinColumn({ name: 'team_id' })
+    @OneToMany(() => User, (user) => user.specialties, {
+        cascade :  true,
     })
-    user: User;
+    user: User[];
 
     
 
